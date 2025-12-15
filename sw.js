@@ -1,11 +1,5 @@
-/* ======================================================
-   Service Worker - RT 外觀抽檢紀錄表
-   支援：離線使用、快取、PWA 啟動
-====================================================== */
-
-const CACHE_NAME = "rt-inspection-cache-v1";
-
-const FILES_TO_CACHE = [
+const CACHE = "rt-cache-v1";
+const FILES = [
     "./",
     "./index.html",
     "./style.css",
@@ -16,52 +10,20 @@ const FILES_TO_CACHE = [
     "./icons/icon-512.png"
 ];
 
-/* ======================================================
-   Install：建立快取
-====================================================== */
-self.addEventListener("install", (event) => {
-    console.log("[ServiceWorker] Install");
-
-    event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            console.log("[ServiceWorker] Pre-caching assets");
-            return cache.addAll(FILES_TO_CACHE);
-        })
-    );
-
-    self.skipWaiting();
+self.addEventListener("install", e => {
+    e.waitUntil(caches.open(CACHE).then(c => c.addAll(FILES)));
 });
 
-/* ======================================================
-   Activate：清除舊快取
-====================================================== */
-self.addEventListener("activate", (event) => {
-    console.log("[ServiceWorker] Activate");
-
-    event.waitUntil(
-        caches.keys().then((keyList) => {
-            return Promise.all(
-                keyList.map((key) => {
-                    if (key !== CACHE_NAME) {
-                        console.log("[ServiceWorker] Removing old cache", key);
-                        return caches.delete(key);
-                    }
-                })
-            );
-        })
+self.addEventListener("activate", e => {
+    e.waitUntil(
+        caches.keys().then(keys =>
+            Promise.all(keys.map(k => k !== CACHE && caches.delete(k)))
+        )
     );
-
-    self.clients.claim();
 });
 
-/* ======================================================
-   Fetch：離線模式支援
-====================================================== */
-self.addEventListener("fetch", (event) => {
-    event.respondWith(
-        caches.match(event.request).then((response) => {
-            // 若有快取 → 先用快取
-            return response || fetch(event.request);
-        })
+self.addEventListener("fetch", e => {
+    e.respondWith(
+        caches.match(e.request).then(r => r || fetch(e.request))
     );
 });

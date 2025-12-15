@@ -11,7 +11,7 @@
 
 <body>
 
-    <!-- 語言切換器：放標題右側、不固定、不跟著捲動 -->
+    <!-- 標題 + 語言切換器 -->
     <div class="title-row">
         <h1 data-i18n="title">RT 外觀抽檢紀錄表</h1>
 
@@ -25,6 +25,7 @@
         </select>
     </div>
 
+    <!-- 基本資料 -->
     <div class="section">
         <h2 data-i18n="basic_info">基本資料</h2>
 
@@ -43,7 +44,7 @@
 
         <label data-i18n="batch_label">批號</label>
 
-        <!-- 批號：依照第 4 張 GAS 樣式排版 -->
+        <!-- 批號區（完全依照圖片 4） -->
         <div class="batch-row">
             <label class="fa-box">
                 <input type="checkbox" id="isFA">
@@ -78,7 +79,7 @@
             <label data-i18n="df2">板邊或槽粗糙</label>
             <input class="df" id="df2">
 
-            <label data-i18n="df3">板邊凸點（後處理板須更改程式）</label>
+            <label data-i-i18n="df3">板邊凸點（後處理板須更改程式）</label>
             <input class="df" id="df3">
 
             <label data-i18n="df4">板面刮傷</label>
@@ -95,7 +96,7 @@
         </div>
     </div>
 
-    <!-- 檢驗 + 備註 -->
+    <!-- 檢驗 & 備註 -->
     <div class="section">
         <h2 data-i18n="check_note">檢驗 & 備註</h2>
 
@@ -106,7 +107,7 @@
         <textarea id="noteInput"></textarea>
     </div>
 
-    <!-- 按鈕（位置依照第 4 張，不做滿版） -->
+    <!-- 按鈕 -->
     <div class="button-row">
         <button id="saveBtn" class="btn-save" data-i18n="save_btn">暫存單筆紀錄</button>
         <button id="submitBtn" class="btn-submit" data-i18n="submit_btn">送出全部紀錄</button>

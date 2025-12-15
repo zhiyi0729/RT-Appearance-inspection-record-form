@@ -7,14 +7,12 @@ document.addEventListener("DOMContentLoaded", () => {
     loadSavedRecords();
 });
 
-/* 日期 & 班別 */
+/* 日期 + 班別自動判定 */
 function initDate() {
     const dateInput = document.getElementById("dateInput");
     const shiftInput = document.getElementById("shiftInput");
-
     let now = new Date();
-    let h = now.getHours();
-    let m = now.getMinutes();
+    let h = now.getHours(), m = now.getMinutes();
 
     if (h < 8 || (h === 8 && m < 30)) shiftInput.value = "C";
     else if (h < 16 || (h === 16 && m < 30)) shiftInput.value = "A";
@@ -28,40 +26,32 @@ document.getElementById("materialInput").addEventListener("input", e => {
     e.target.value = e.target.value.toUpperCase();
 });
 
-/* 批號事件 */
+/* 批號格式處理 */
 function initBatchEvents() {
-    const main = document.getElementById("batchMain");
-    const sub = document.getElementById("batchSub");
-    const dash = document.getElementById("dashDisplay");
+    let main = document.getElementById("batchMain");
+    let sub = document.getElementById("batchSub");
 
     main.addEventListener("input", () => {
-        main.value = main.value.toUpperCase().slice(0, 3);
+        main.value = main.value.toUpperCase().replace(/[^A-Z0-9]/g, "").slice(0, 3);
     });
 
     sub.addEventListener("input", () => {
         let v = sub.value.toUpperCase().replace(/[^A-Z0-9]/g, "");
         if (v.length === 1) v = "0" + v;
-        sub.value = v.slice(-2);
-        dash.style.visibility = sub.value ? "visible" : "hidden";
+        if (v.length > 2) v = v.slice(-2);
+        sub.value = v;
     });
-
-    dash.style.visibility = "hidden";
 }
 
 function getFullBatch() {
-    const isFA = document.getElementById("isFA").checked;
-    const main = document.getElementById("batchMain").value.trim().toUpperCase();
-    const sub = document.getElementById("batchSub").value.trim();
-
+    let fa = document.getElementById("isFA").checked ? "FA" : "";
+    let main = document.getElementById("batchMain").value.trim();
+    let sub = document.getElementById("batchSub").value.trim();
     if (!main) return "";
-
-    let batch = (isFA ? "FA" : "") + main;
-    if (sub) batch += "-" + sub;
-
-    return batch;
+    return fa + main + "-" + sub;
 }
 
-/* 批量/單位/抽驗數 */
+/* 批量 + 單位 + 抽驗 */
 function initQtyEvents() {
     const qty = document.getElementById("qtyInput");
     const unit = document.getElementById("unitDisplay");
@@ -69,7 +59,6 @@ function initQtyEvents() {
 
     qty.addEventListener("input", () => {
         let q = Number(qty.value);
-
         unit.value = q > 300 ? "PCS" : "PNL";
         sample.value = q > 20 ? 20 : q;
     });
@@ -77,11 +66,11 @@ function initQtyEvents() {
 
 /* 異常補 0 */
 function collectDefects() {
-    let res = {};
+    let d = {};
     document.querySelectorAll(".df").forEach((el, i) => {
-        res["df" + (i + 1)] = Number(el.value) || 0;
+        d["df" + (i+1)] = Number(el.value) || 0;
     });
-    return res;
+    return d;
 }
 
 /* 暫存 */
@@ -90,7 +79,8 @@ function initSaveButton() {
 }
 
 function saveRecord() {
-    const rec = buildRecordObject();
+    let rec = buildRecord();
+
     if (!rec.batch || !rec.material) {
         alert("批號與料號不可空白！");
         return;
@@ -102,48 +92,42 @@ function saveRecord() {
 
     loadSavedRecords();
     clearForm(rec.inspector);
-
     alert("已暫存！");
 }
 
-/* 建立物件 */
-function buildRecordObject() {
+function buildRecord() {
     return {
         date: document.getElementById("dateInput").value,
         shift: document.getElementById("shiftInput").value,
-        material: document.getElementById("materialInput").value.trim().toUpperCase(),
+        material: document.getElementById("materialInput").value,
         batch: getFullBatch(),
         qty: Number(document.getElementById("qtyInput").value),
         unit: document.getElementById("unitDisplay").value,
         sample: Number(document.getElementById("sampleInput").value),
         defects: collectDefects(),
-        inspector: document.getElementById("inspectorInput").value.trim().toUpperCase(),
-        note: document.getElementById("noteInput").value.trim()
+        inspector: document.getElementById("inspectorInput").value.toUpperCase(),
+        note: document.getElementById("noteInput").value
     };
 }
 
-/* 清空表單（保留檢驗員） */
 function clearForm(inspector) {
     document.getElementById("materialInput").value = "";
     document.getElementById("batchMain").value = "";
     document.getElementById("batchSub").value = "";
-    document.getElementById("dashDisplay").style.visibility = "hidden";
-
     document.getElementById("qtyInput").value = "";
     document.getElementById("unitDisplay").value = "";
     document.getElementById("sampleInput").value = "";
+    document.getElementById("noteInput").value = "";
 
     document.querySelectorAll(".df").forEach(el => el.value = "");
 
-    document.getElementById("noteInput").value = "";
     document.getElementById("inspectorInput").value = inspector;
 }
 
 /* 暫存列表 */
 function loadSavedRecords() {
-    const tbody = document.querySelector("#recordTable tbody");
+    let tbody = document.querySelector("#recordTable tbody");
     tbody.innerHTML = "";
-
     let list = JSON.parse(localStorage.getItem("rt_records") || "[]");
 
     list.forEach((rec, i) => {
@@ -156,8 +140,7 @@ function loadSavedRecords() {
             <td>
                 <button onclick="editRecord(${i})">編輯</button>
                 <button onclick="deleteRecord(${i})">刪除</button>
-            </td>
-        `;
+            </td>`;
         tbody.appendChild(tr);
     });
 }
@@ -169,23 +152,20 @@ function editRecord(i) {
 
     document.getElementById("dateInput").value = rec.date;
     document.getElementById("shiftInput").value = rec.shift;
-
     document.getElementById("materialInput").value = rec.material;
 
     document.getElementById("isFA").checked = rec.batch.startsWith("FA");
 
-    let raw = rec.batch.replace("FA", "");
-    let parts = raw.split("-");
-    document.getElementById("batchMain").value = parts[0];
-    document.getElementById("batchSub").value = parts[1] || "";
-    document.getElementById("dashDisplay").style.visibility = parts[1] ? "visible" : "hidden";
+    let raw = rec.batch.replace("FA", "").split("-");
+    document.getElementById("batchMain").value = raw[0] || "";
+    document.getElementById("batchSub").value = raw[1] || "";
 
     document.getElementById("qtyInput").value = rec.qty;
     document.getElementById("unitDisplay").value = rec.unit;
     document.getElementById("sampleInput").value = rec.sample;
 
     document.querySelectorAll(".df").forEach((el, idx) => {
-        el.value = rec.defects["df" + (idx + 1)];
+        el.value = rec.defects["df"+(idx+1)];
     });
 
     document.getElementById("inspectorInput").value = rec.inspector;
@@ -210,15 +190,10 @@ function initSubmitButton() {
 }
 
 function submitRecords() {
-    let list = JSON.parse(localStorage.getItem("rt_records") || "[]");
-    if (!list.length) {
-        alert("沒有資料可送出");
-        return;
-    }
-
-    console.log("送出資料：", list);
-    alert("資料已送出！（示範：console.log）");
-
+    let data = JSON.parse(localStorage.getItem("rt_records") || "[]");
+    if (!data.length) return alert("沒有資料可送出");
+    console.log("送出資料：", data);
+    alert("資料已送出（示範模式）");
     localStorage.removeItem("rt_records");
     loadSavedRecords();
 }

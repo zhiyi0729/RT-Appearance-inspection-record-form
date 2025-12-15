@@ -4,22 +4,17 @@
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>RT 外觀抽檢紀錄表</title>
-
-    <!-- PWA -->
     <link rel="manifest" href="manifest.json" />
     <meta name="theme-color" content="#1976d2" />
-
-    <!-- Icons -->
-    <link rel="icon" href="icons/icon-192.png" />
-
-    <!-- CSS -->
     <link rel="stylesheet" href="style.css" />
 </head>
 
 <body>
 
-    <!-- ★ 右上角語言切換器 -->
-    <div class="lang-switch">
+    <!-- 語言切換器：放標題右側、不固定、不跟著捲動 -->
+    <div class="title-row">
+        <h1 data-i18n="title">RT 外觀抽檢紀錄表</h1>
+
         <select id="languageSelector">
             <option value="zh-TW">🇹🇼 中文</option>
             <option value="en">🇺🇸 English</option>
@@ -30,115 +25,112 @@
         </select>
     </div>
 
-    <div class="container">
+    <div class="section">
+        <h2 data-i18n="basic_info">基本資料</h2>
 
-        <h1 data-i18n="title">RT 外觀抽檢紀錄表</h1>
+        <label data-i18n="date_label">日期</label>
+        <input type="date" id="dateInput">
 
-        <!-- ★ 日期 + 班別 -->
-        <div class="section">
-            <label data-i18n="date_label">日期</label>
-            <input type="date" id="dateInput" />
+        <label data-i18n="shift_label">班別</label>
+        <select id="shiftInput">
+            <option value="A">A（日班）</option>
+            <option value="B">B（小夜）</option>
+            <option value="C">C（大夜）</option>
+        </select>
 
-            <label data-i18n="shift_label">班別</label>
-            <select id="shiftInput">
-                <option value="A">A（日班）</option>
-                <option value="B">B（小夜）</option>
-                <option value="C">C（大夜）</option>
-            </select>
+        <label data-i18n="material_label">料號</label>
+        <input type="text" id="materialInput" maxlength="7">
+
+        <label data-i18n="batch_label">批號</label>
+
+        <!-- 批號：依照第 4 張 GAS 樣式排版 -->
+        <div class="batch-row">
+            <label class="fa-box">
+                <input type="checkbox" id="isFA">
+                <span>FA</span>
+            </label>
+
+            <input id="batchMain" maxlength="3" class="batch-main">
+
+            <span id="dashDisplay" class="batch-dash">-</span>
+
+            <input id="batchSub" maxlength="2" class="batch-sub">
         </div>
 
-        <!-- ★ 料號 -->
-        <div class="section">
-            <label data-i18n="material_label">料號</label>
-            <input type="text" id="materialInput" maxlength="7" />
-        </div>
+        <label data-i18n="qty_label">批量</label>
+        <input type="number" id="qtyInput">
 
-        <!-- ★ 批號（你的最新版本：FA + 主批 + dash + 子批） -->
-        <div class="section">
-            <label data-i18n="batch_label">批號</label>
+        <label data-i18n="unit_label">單位</label>
+        <input type="text" id="unitDisplay" readonly>
 
-            <div class="batch-container">
-                <label class="fa-box">
-                    <input type="checkbox" id="isFA" />
-                    <span>FA</span>
-                </label>
-
-                <div class="batch-box">
-                    <input id="batchMain" maxlength="3" />
-                </div>
-
-                <div class="batch-dash" id="dashDisplay">-</div>
-
-                <div class="batch-box">
-                    <input id="batchSub" maxlength="2" />
-                </div>
-            </div>
-        </div>
-
-        <!-- ★ 批量 + 單位 + 抽驗數 -->
-        <div class="section">
-            <label data-i18n="qty_label">批量</label>
-            <input type="number" id="qtyInput" />
-
-            <label data-i18n="unit_label">單位</label>
-            <input type="text" id="unitDisplay" readonly />
-
-            <label data-i18n="sample_label">抽驗數</label>
-            <input type="number" id="sampleInput" />
-        </div>
-
-        <!-- ★ 異常項目 -->
-        <div class="section">
-            <label data-i18n="defect_label">異常項目（片數）</label>
-
-            <div class="defect-list">
-                <label>PIN孔損壞<input class="df" id="df1" type="number" /></label>
-                <label>板邊/槽粗糙<input class="df" id="df2" type="number" /></label>
-                <label>板邊凸點<input class="df" id="df3" type="number" /></label>
-                <label>板面刮傷<input class="df" id="df4" type="number" /></label>
-                <label>露銅<input class="df" id="df5" type="number" /></label>
-                <label>二次孔分層錫墊<input class="df" id="df6" type="number" /></label>
-                <label>折斷/摺痕<input class="df" id="df7" type="number" /></label>
-            </div>
-        </div>
-
-        <!-- ★ 檢驗員 -->
-        <div class="section">
-            <label data-i18n="inspector_label">檢驗員</label>
-            <input type="text" id="inspectorInput" maxlength="5" />
-        </div>
-
-        <!-- ★ 按鈕（全寬） -->
-        <button id="saveBtn" class="full-btn" data-i18n="save_btn">暫存單筆紀錄</button>
-        <button id="submitBtn" class="submit-btn full-btn" data-i18n="submit_btn">
-            送出全部紀錄
-        </button>
-
-        <!-- ★ 暫存列表 -->
-        <h2 data-i18n="list_title">暫存列表</h2>
-        <table id="recordTable">
-            <thead>
-                <tr>
-                    <th data-i18n="th_batch">批號</th>
-                    <th data-i18n="th_material">料號</th>
-                    <th data-i18n="th_qty">批量</th>
-                    <th data-i18n="th_sample">抽驗數</th>
-                    <th data-i18n="th_actions">操作</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-
+        <label data-i18n="sample_label">抽驗數</label>
+        <input type="number" id="sampleInput">
     </div>
 
-    <!-- JS -->
+    <!-- 異常項目 -->
+    <div class="section">
+        <h2 data-i18n="defect_label">異常項目（空格內請填片數「零收一退」）</h2>
+
+        <div class="defect-grid">
+            <label data-i18n="df1">PIN孔損壞</label>
+            <input class="df" id="df1">
+
+            <label data-i18n="df2">板邊或槽粗糙</label>
+            <input class="df" id="df2">
+
+            <label data-i18n="df3">板邊凸點（後處理板須更改程式）</label>
+            <input class="df" id="df3">
+
+            <label data-i18n="df4">板面刮傷</label>
+            <input class="df" id="df4">
+
+            <label data-i18n="df5">露銅</label>
+            <input class="df" id="df5">
+
+            <label data-i18n="df6">二次孔分層錫墊脫落</label>
+            <input class="df" id="df6">
+
+            <label data-i18n="df7">折斷邊 / 摺痕</label>
+            <input class="df" id="df7">
+        </div>
+    </div>
+
+    <!-- 檢驗 + 備註 -->
+    <div class="section">
+        <h2 data-i18n="check_note">檢驗 & 備註</h2>
+
+        <label data-i18n="inspector_label">檢驗員</label>
+        <input type="text" id="inspectorInput" maxlength="5">
+
+        <label data-i18n="note_label">備註</label>
+        <textarea id="noteInput"></textarea>
+    </div>
+
+    <!-- 按鈕（位置依照第 4 張，不做滿版） -->
+    <div class="button-row">
+        <button id="saveBtn" class="btn-save" data-i18n="save_btn">暫存單筆紀錄</button>
+        <button id="submitBtn" class="btn-submit" data-i18n="submit_btn">送出全部紀錄</button>
+    </div>
+
+    <h2 data-i18n="list_title">暫存列表</h2>
+
+    <table id="recordTable">
+        <thead>
+            <tr>
+                <th data-i18n="th_batch">批號</th>
+                <th data-i18n="th_material">料號</th>
+                <th data-i18n="th_qty">批量</th>
+                <th data-i18n="th_sample">抽驗</th>
+                <th data-i18n="th_actions">操作</th>
+            </tr>
+        </thead>
+        <tbody></tbody>
+    </table>
+
     <script src="i18n.js"></script>
     <script src="main.js"></script>
     <script>
-        if ("serviceWorker" in navigator) {
-            navigator.serviceWorker.register("sw.js");
-        }
+        if ("serviceWorker" in navigator) navigator.serviceWorker.register("sw.js");
     </script>
-
 </body>
 </html>

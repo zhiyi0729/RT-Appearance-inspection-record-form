@@ -1,204 +1,87 @@
-/* ===========================
-   全站基礎設定
-=========================== */
 body {
     font-family: "Noto Sans TC", sans-serif;
     margin: 0;
     padding: 0;
-    background: #f5f6fb;
+    background: #f5f5f5;
 }
 
-.container {
-    padding: 20px;
-    max-width: 900px;
-    margin: auto;
-}
-
-h1, h2 {
-    text-align: left;
-    color: #333;
-}
-
-/* ===========================
-   語言切換器（右上角）
-=========================== */
-.lang-switch {
-    position: fixed;
-    right: 15px;
-    top: 15px;
-    z-index: 999;
-}
-
-#languageSelector {
-    padding: 6px 12px;
-    font-size: 15px;
-    border-radius: 8px;
-}
-
-/* ===========================
-   區塊
-=========================== */
 .section {
-    background: white;
-    padding: 16px;
-    border-radius: 14px;
-    margin-bottom: 18px;
-    box-shadow: 0 2px 6px rgba(0,0,0,0.06);
+    background: #fff;
+    padding: 15px;
+    margin: 12px;
+    border: 1px solid #ddd;
 }
 
-.section label {
-    font-size: 16px;
-    color: #333;
-    margin-bottom: 6px;
-    display: block;
-}
-
-.section input, .section select {
-    width: 100%;
-    padding: 10px;
-    margin-bottom: 12px;
-    border-radius: 8px;
-    border: 1px solid #ccc;
-    box-sizing: border-box;
-    font-size: 16px;
-}
-
-/* ===========================
-   批號區（工廠友善 RWD 版）
-=========================== */
-
-.batch-container {
-    display: grid;
-    grid-template-columns:
-        minmax(45px, 1fr)    /* FA */
-        minmax(70px, 3fr)    /* 主批 */
-        minmax(20px, 0.7fr)  /* dash */
-        minmax(50px, 2fr);   /* 子批 */
-    gap: 6px;
-    white-space: nowrap;
-    align-items: center;
-    width: 100%;
-    overflow-x: hidden;
-}
-
-/* FA checkbox + 文字 */
-.fa-box {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: clamp(12px, 3vw, 16px);
-    white-space: nowrap;
-}
-
-.fa-box input {
-    transform: scale(1.25);
-}
-
-/* 主批 / 子批欄位 */
-.batch-box input {
-    width: 100%;
-    padding: clamp(4px, 1vw, 10px);
-    font-size: clamp(12px, 3vw, 16px);
-    border-radius: 10px;
-    border: 1px solid #ccc;
-    text-transform: uppercase;
-}
-
-/* dash */
-.batch-dash {
-    font-size: clamp(18px, 4vw, 22px);
-    text-align: center;
-}
-
-/* ===========================
-   異常項目
-=========================== */
-.defect-list label {
+.title-row {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 6px;
-    font-size: 15px;
+    align-items: center;
+    margin: 15px;
 }
 
-.defect-list input {
-    width: 80px;
-    text-align: right;
-}
-
-/* ===========================
-   按鈕（全螢幕滿版）
-=========================== */
-.full-btn {
+input, textarea, select {
     width: 100%;
-    padding: 14px;
-    margin-top: 8px;
+    padding: 8px;
+    border: 1px solid #888;
+    border-radius: 0;
+    margin-bottom: 10px;
+    font-size: 16px;
+}
+
+.batch-row {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.batch-main,
+.batch-sub {
+    width: 80px;
+}
+
+.batch-dash {
+    font-size: 20px;
+    font-weight: bold;
+}
+
+.defect-grid {
+    display: grid;
+    grid-template-columns: 1fr 80px;
+    gap: 6px;
+}
+
+textarea {
+    height: 70px;
+}
+
+.button-row {
+    display: flex;
+    gap: 10px;
+    margin: 15px;
+}
+
+.btn-save {
+    flex: 1;
+    background: #f6c443;
     border: none;
-    border-radius: 10px;
-    background: #1976d2;
+    padding: 10px;
+}
+
+.btn-submit {
+    flex: 1;
+    background: #4caf50;
     color: white;
-    font-size: 18px;
-    cursor: pointer;
+    border: none;
+    padding: 10px;
 }
 
-.full-btn:hover {
-    background: #135ca0;
-}
-
-.submit-btn {
-    background: #2e7d32;
-}
-
-.submit-btn:hover {
-    background: #1e5a22;
-}
-
-/* ===========================
-   暫存列表
-=========================== */
 table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
-}
-
-thead {
-    background: #1976d2;
-    color: white;
+    margin: 15px;
 }
 
 th, td {
-    border: 1px solid #ddd;
-    padding: 8px;
-    font-size: 14px;
-}
-
-td button {
-    padding: 6px 10px;
-    font-size: 14px;
-    border-radius: 6px;
-    border: none;
-    cursor: pointer;
-}
-
-.edit-btn {
-    background: #ffb300;
-}
-
-.delete-btn {
-    background: #d32f2f;
-    color: white;
-}
-
-td button:hover {
-    opacity: 0.85;
-}
-
-/* ===========================
-   手機版額外優化
-=========================== */
-@media (max-width: 480px) {
-    th, td {
-        font-size: 12px;
-        padding: 6px;
-    }
+    border: 1px solid #aaa;
+    padding: 6px;
 }
